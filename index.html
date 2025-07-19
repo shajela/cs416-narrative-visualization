@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chicago Energy Usage 2010: How Energy Consumption Reveals Urban Living Patterns</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://unpkg.com/d3-annotation@2.5.1/d3-annotation.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .subtitle {
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+        
+        .scene {
+            display: none;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .scene.active {
+            display: block;
+        }
+        
+        .scene h2 {
+            font-size: 2em;
+            margin-bottom: 15px;
+            color: #FFD700;
+        }
+        
+        .scene-description {
+            font-size: 1.1em;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+        
+        #chart-container {
+            background: rgba(255,255,255,0.95);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            color: #333;
+        }
+        
+        .navigation {
+            margin: 30px 0;
+        }
+        
+        .nav-button {
+            background: #FFD700;
+            color: #1e3c72;
+            border: none;
+            padding: 12px 25px;
+            margin: 0 10px;
+            border-radius: 25px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-button:hover {
+            background: #FFA500;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .nav-button:disabled {
+            background: #ccc;
+            color: #666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .scene-indicator {
+            margin: 20px 0;
+        }
+        
+        .indicator-dot {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            margin: 0 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .indicator-dot.active {
+            background: #FFD700;
+            transform: scale(1.2);
+        }
+        
+        .axis text {
+            font-size: 12px;
+        }
+        
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: #333;
+            shape-rendering: crispEdges;
+        }
+        
+        .tooltip {
+            position: absolute;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            border-radius: 5px;
+            pointer-events: none;
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .bar:hover {
+            opacity: 0.8;
+            cursor: pointer;
+        }
+        
+        .line {
+            fill: none;
+            stroke-width: 3;
+        }
+        
+        .area {
+            opacity: 0.7;
+        }
+        
+        .annotation-note-title {
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .annotation-note-label {
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Chicago Energy Usage 2010</h1>
+        <p class="subtitle">How Energy Consumption Reveals Urban Living Patterns</p>
+        
+        <div class="scene-indicator">
+            <span class="indicator-dot active" data-scene="0"></span>
+            <span class="indicator-dot" data-scene="1"></span>
+            <span class="indicator-dot" data-scene="2"></span>
+        </div>
+        
+        <!-- Scene 1: Overview -->
+        <div class="scene active" id="scene-0">
+            <h2>🏙️ The Energy Landscape of Chicago</h2>
+            <p class="scene-description">
+                In 2010, Chicago consumed massive amounts of energy across its diverse neighborhoods. 
+                Each community area tells a unique story of urban living through its energy consumption patterns.
+                Let's explore how different building types contribute to the city's total energy footprint.
+            </p>
+            <div id="chart-container">
+                <div id="chart-0"></div>
+            </div>
+        </div>
+        
+        <!-- Scene 2: Seasonal Patterns -->
+        <div class="scene" id="scene-1">
+            <h2>❄️🌞 The Seasonal Dance of Energy</h2>
+            <p class="scene-description">
+                Chicago's energy consumption follows nature's rhythm. Winter brings massive heating demands, 
+                while summer sees cooling needs spike. Gas usage peaks in winter months, while electricity 
+                shows its own seasonal patterns. Notice how dramatically usage changes throughout the year.
+            </p>
+            <div id="chart-container">
+                <div id="chart-1"></div>
+            </div>
+        </div>
+        
+        <!-- Scene 3: Building Type Analysis -->
+        <div class="scene" id="scene-2">
+            <h2>🏢🏠 Different Buildings, Different Stories</h2>
+            <p class="scene-description">
+                Not all buildings are created equal. Commercial buildings, residential complexes, and single-family homes 
+                each have distinct energy consumption profiles. Large commercial buildings dominate total usage, 
+                but residential buildings show the most dramatic seasonal variations.
+            </p>
+            <div id="chart-container">
+                <div id="chart-2"></div>
+            </div>
+        </div>
+        
+        <div class="navigation">
+            <button class="nav-button" id="prev-btn" onclick="previousScene()">← Previous</button>
+            <button class="nav-button" id="next-btn" onclick="nextScene()">Next →</button>
+        </div>
+        
+        <div class="tooltip" id="tooltip"></div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentScene = 0;
+        let data = [];
+        let processedData = {};
+        
+        // Scene management
+        function showScene(sceneIndex) {
+            // Hide all scenes
+            document.querySelectorAll('.scene').forEach(scene => {
+                scene.classList.remove('active');
+            });
+            
+            // Show current scene
+            document.getElementById(`scene-${sceneIndex}`).classList.add('active');
+            
+            // Update indicators
+            document.querySelectorAll('.indicator-dot').forEach((dot, index) => {
+                dot.classList.toggle('active', index === sceneIndex);
+            });
+            
+            // Update navigation buttons
+            document.getElementById('prev-btn').disabled = sceneIndex === 0;
+            document.getElementById('next-btn').disabled = sceneIndex === 2;
+            
+            // Render chart for current scene
+            renderChart(sceneIndex);
+        }
+        
+        function nextScene() {
+            if (currentScene < 2) {
+                currentScene++;
+                showScene(currentScene);
+            }
+        }
+        
+        function previousScene() {
+            if (currentScene > 0) {
+                currentScene--;
+                showScene(currentScene);
+            }
+        }
+        
+        // Add click handlers for indicators
+        document.querySelectorAll('.indicator-dot').forEach((dot, index) => {
+            dot.addEventListener('click', () => {
+                currentScene = index;
+                showScene(currentScene);
+            });
+        });
+        
+        // Data processing functions
+        function processData(rawData) {
+            const processed = {
+                byBuildingType: {},
+                monthlyTotals: {},
+                buildingTypeMonthly: {}
+            };
+            
+            const months = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE',
+                          'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'];
+            
+            // Initialize monthly totals
+            months.forEach(month => {
+                processed.monthlyTotals[month] = { kwh: 0, therms: 0 };
+            });
+            
+            rawData.forEach(row => {
+                const buildingType = row['BUILDING TYPE'];
+                if (!buildingType || buildingType === '') return;
+                
+                // Initialize building type data
+                if (!processed.byBuildingType[buildingType]) {
+                    processed.byBuildingType[buildingType] = { 
+                        totalKwh: 0, 
+                        totalTherms: 0, 
+                        count: 0 
+                    };
+                }
+                
+                if (!processed.buildingTypeMonthly[buildingType]) {
+                    processed.buildingTypeMonthly[buildingType] = {};
+                    months.forEach(month => {
+                        processed.buildingTypeMonthly[buildingType][month] = { kwh: 0, therms: 0 };
+                    });
+                }
+                
+                // Process total consumption
+                const totalKwh = parseFloat(row['TOTAL KWH']) || 0;
+                const totalTherms = parseFloat(row['TOTAL THERMS']) || 0;
+                
+                processed.byBuildingType[buildingType].totalKwh += totalKwh;
+                processed.byBuildingType[buildingType].totalTherms += totalTherms;
+                processed.byBuildingType[buildingType].count++;
+                
+                // Process monthly data
+                months.forEach(month => {
+                    const kwh = parseFloat(row[`KWH ${month} 2010`]) || 0;
+                    const therms = parseFloat(row[`THERM ${month} 2010`]) || 0;
+                    
+                    processed.monthlyTotals[month].kwh += kwh;
+                    processed.monthlyTotals[month].therms += therms;
+                    processed.buildingTypeMonthly[buildingType][month].kwh += kwh;
+                    processed.buildingTypeMonthly[buildingType][month].therms += therms;
+                });
+            });
+            
+            return processed;
+        }
+        
+        // Chart rendering functions
+        function renderChart(sceneIndex) {
+            const container = d3.select(`#chart-${sceneIndex}`);
+            container.selectAll("*").remove();
+            
+            switch(sceneIndex) {
+                case 0:
+                    renderOverviewChart(container);
+                    break;
+                case 1:
+                    renderSeasonalChart(container);
+                    break;
+                case 2:
+                    renderBuildingTypeChart(container);
+                    break;
+            }
+        }
+        
+        function renderOverviewChart(container) {
+            const margin = {top: 40, right: 80, bottom: 80, left: 80};
+            const width = 800 - margin.left - margin.right;
+            const height = 400 - margin.bottom - margin.top;
+            
+            const svg = container.append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom);
+            
+            const g = svg.append("g")
+                .attr("transform", `translate(${margin.left},${margin.top})`);
+            
+            // Prepare data
+            const buildingTypes = Object.keys(processedData.byBuildingType);
+            const chartData = buildingTypes.map(type => ({
+                buildingType: type,
+                totalKwh: processedData.byBuildingType[type].totalKwh,
+                totalTherms: processedData.byBuildingType[type].totalTherms
+            })).sort((a, b) => b.totalKwh - a.totalKwh);
+            
+            // Scales
+            const xScale = d3.scaleBand()
+                .domain(chartData.map(d => d.buildingType))
+                .range([0, width])
+                .padding(0.2);
+            
+            const yScale = d3.scaleLinear()
+                .domain([0, d3.max(chartData, d => d.totalKwh)])
+                .range([height, 0]);
+            
+            // Color scale
+            const colorScale = d3.scaleOrdinal()
+                .domain(buildingTypes)
+                .range(['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FECA57']);
+            
+            // Bars
+            g.selectAll(".bar")
+                .data(chartData)
+                .enter().append("rect")
+                .attr("class", "bar")
+                .attr("x", d => xScale(d.buildingType))
+                .attr("width", xScale.bandwidth())
+                .attr("y", height)
+                .attr("height", 0)
+                .attr("fill", d => colorScale(d.buildingType))
+                .on("mouseover", function(event, d) {
+                    showTooltip(event, `${d.buildingType}<br/>Electricity: ${d.totalKwh.toLocaleString()} KWH<br/>Gas: ${d.totalTherms.toLocaleString()} Therms`);
+                })
+                .on("mouseout", hideTooltip)
+                .transition()
+                .duration(1000)
+                .attr("y", d => yScale(d.totalKwh))
+                .attr("height", d => height - yScale(d.totalKwh));
+            
+            // Axes
+            g.append("g")
+                .attr("class", "axis")
+                .attr("transform", `translate(0,${height})`)
+                .call(d3.axisBottom(xScale))
+                .selectAll("text")
+                .style("text-anchor", "end")
+                .attr("dx", "-.8em")
+                .attr("dy", ".15em")
+                .attr("transform", "rotate(-45)");
+            
+            g.append("g")
+                .attr("class", "axis")
+                .call(d3.axisLeft(yScale).tickFormat(d3.format(".2s")));
+            
+            // Labels
+            g.append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 0 - margin.left)
+                .attr("x", 0 - (height / 2))
+                .attr("dy", "1em")
+                .style("text-anchor", "middle")
+                .style("font-size", "14px")
+                .style("font-weight", "bold")
+                .text("Total Electricity Consumption (KWH)");
+            
+            g.append("text")
+                .attr("transform", `translate(${width/2}, ${height + margin.bottom - 5})`)
+                .style("text-anchor", "middle")
+                .style("font-size", "14px")
+                .style("font-weight", "bold")
+                .text("Building Type");
+            
+            // Annotation
+            const annotations = [{
+                note: {
+                    label: "Commercial buildings dominate Chicago's energy consumption",
+                    title: "Key Insight"
+                },
+                x: xScale("Commercial") + xScale.bandwidth()/2,
+                y: yScale(chartData.find(d => d.buildingType === "Commercial").totalKwh) - 20,
+                dy: -30,
+                dx: 50
+            }];
+            
+            const makeAnnotations = d3.annotation()
+                .annotations(annotations);
+            
+            g.append("g")
+                .attr("class", "annotation-group")
+                .call(makeAnnotations);
+        }
+        
+        function renderSeasonalChart(container) {
+            const margin = {top: 40, right: 80, bottom: 60, left: 80};
+            const width = 800 - margin.left - margin.right;
+            const height = 400 - margin.bottom - margin.top;
+            
+            const svg = container.append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom);
+            
+            const g = svg.append("g")
+                .attr("transform", `translate(${margin.left},${margin.top})`);
+            
+            // Prepare data
+            const months = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE',
+                          'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'];
+            
+            const chartData = months.map((month, i) => ({
+                month: month.substring(0, 3),
+                monthIndex: i,
+                kwh: processedData.monthlyTotals[month].kwh,
+                therms: processedData.monthlyTotals[month].therms
+            }));
+            
+            // Scales
+            const xScale = d3.scalePoint()
+                .domain(chartData.map(d => d.month))
+                .range([0, width]);
+            
+            const yScaleKwh = d3.scaleLinear()
+                .domain([0, d3.max(chartData, d => d.kwh)])
+                .range([height, 0]);
+            
+            const yScaleTherms = d3.scaleLinear()
+                .domain([0, d3.max(chartData, d => d.therms)])
+                .range([height, 0]);
+            
+            // Area generators
+            const areaKwh = d3.area()
+                .x(d => xScale(d.month))
+                .y0(height)
+                .y1(d => yScaleKwh(d.kwh))
+                .curve(d3.curveCardinal);
+            
+            const areaTherms = d3.area()
+                .x(d => xScale(d.month))
+                .y0(height)
+                .y1(d => yScaleTherms(d.therms))
+                .curve(d3.curveCardinal);
+            
+            // Line generators
+            const lineKwh = d3.line()
+                .x(d => xScale(d.month))
+                .y(d => yScaleKwh(d.kwh))
+                .curve(d3.curveCardinal);
+            
+            const lineTherms = d3.line()
+                .x(d => xScale(d.month))
+                .y(d => yScaleTherms(d.therms))
+                .curve(d3.curveCardinal);
+            
+            // Areas
+            g.append("path")
+                .datum(chartData)
+                .attr("class", "area")
+                .attr("d", areaKwh)
+                .style("fill", "#FF6B6B")
+                .style("opacity", 0)
+                .transition()
+                .duration(1500)
+                .style("opacity", 0.3);
+            
+            g.append("path")
+                .datum(chartData)
+                .attr("class", "area")
+                .attr("d", areaTherms)
+                .style("fill", "#4ECDC4")
+                .style("opacity", 0)
+                .transition()
+                .duration(1500)
+                .delay(500)
+                .style("opacity", 0.3);
+            
+            // Lines
+            g.append("path")
+                .datum(chartData)
+                .attr("class", "line")
+                .attr("d", lineKwh)
+                .style("stroke", "#FF6B6B")
+                .style("stroke-width", 3)
+                .style("fill", "none");
+            
+            g.append("path")
+                .datum(chartData)
+                .attr("class", "line")
+                .attr("d", lineTherms)
+                .style("stroke", "#4ECDC4")
+                .style("stroke-width", 3)
+                .style("fill", "none");
+            
+            // Points
+            g.selectAll(".kwh-point")
+                .data(chartData)
+                .enter().append("circle")
+                .attr("class", "kwh-point")
+                .attr("cx", d => xScale(d.month))
+                .attr("cy", d => yScaleKwh(d.kwh))
+                .attr("r", 5)
+                .style("fill", "#FF6B6B")
+                .style("opacity", 0)
+                .on("mouseover", function(event, d) {
+                    showTooltip(event, `${d.month}<br/>Electricity: ${d.kwh.toLocaleString()} KWH`);
+                })
+                .on("mouseout", hideTooltip)
+                .transition()
+                .duration(1000)
+                .delay(1000)
+                .style("opacity", 1);
+            
+            g.selectAll(".therms-point")
+                .data(chartData)
+                .enter().append("circle")
+                .attr("class", "therms-point")
+                .attr("cx", d => xScale(d.month))
+                .attr("cy", d => yScaleTherms(d.therms))
+                .attr("r", 5)
+                .style("fill", "#4ECDC4")
+                .style("opacity", 0)
+                .on("mouseover", function(event, d) {
+                    showTooltip(event, `${d.month}<br/>Gas: ${d.therms.toLocaleString()} Therms`);
+                })
+                .on("mouseout", hideTooltip)
+                .transition()
+                .duration(1000)
+                .delay(1500)
+                .style("opacity", 1);
+            
+            // Axes
+            g.append("g")
+                .attr("class", "axis")
+                .attr("transform", `translate(0,${height})`)
+                .call(d3.axisBottom(xScale));
+            
+            // Left y-axis for electricity
+            const leftAxis = g.append("g")
+                .attr("class", "axis")
+                .call(d3.axisLeft(yScaleKwh).tickFormat(d3.format(".2s")));
+            
+            leftAxis.append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", -50)
+                .attr("x", -height/2)
+                .attr("dy", "0.71em")
+                .attr("text-anchor", "middle")
+                .style("fill", "#FF6B6B")
+                .style("font-size", "14px")
+                .style("font-weight", "bold")
+                .text("Electricity (KWH)");
+            
+            // Right y-axis for gas
+            const rightAxis = g.append("g")
+                .attr("class", "axis")
+                .attr("transform", `translate(${width},0)`)
+                .call(d3.axisRight(yScaleTherms).tickFormat(d3.format(".2s")));
+            
+            rightAxis.append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 50)
+                .attr("x", -height/2)
+                .attr("dy", "0.71em")
+                .attr("text-anchor", "middle")
+                .style("fill", "#4ECDC4")
+                .style("font-size", "14px")
+                .style("font-weight", "bold")
+                .text("Gas (Therms)");
+            
+            // Legend
+            const legend = g.append("g")
+                .attr("class", "legend")
+                .attr("transform", `translate(${width - 120}, 20)`);
+            
+            legend.append("rect")
+                .attr("x", 0)
+                .attr("y", 0)
+                .attr("width", 15)
+                .attr("height", 15)
+                .style("fill", "#FF6B6B");
+            
+            legend.append("text")
+                .attr("x", 20)
+                .attr("y", 12)
+                .text("Electricity")
+                .style("font-size", "12px");
+            
+            legend.append("rect")
+                .attr("x", 0)
+                .attr("y", 25)
+                .attr("width", 15)
+                .attr("height", 15)
+                .style("fill", "#4ECDC4");
+            
+            legend.append("text")
+                .attr("x", 20)
+                .attr("y", 37)
+                .text("Gas")
+                .style("font-size", "12px");
+            
+            // Annotations
+            const annotations = [
+                {
+                    note: {
+                        label: "Peak heating season",
+                        title: "Winter Gas Usage"
+                    },
+                    x: xScale("JAN"),
+                    y: yScaleTherms(chartData[0].therms),
+                    dy: -30,
+                    dx: 30
+                },
+                {
+                    note: {
+                        label: "Summer cooling demand",
+                        title: "Peak Electricity"
+                    },
+                    x: xScale("JUL"),
+                    y: yScaleKwh(chartData[6].kwh),
+                    dy: -30,
+                    dx: -30
+                }
+            ];
+            
+            const makeAnnotations = d3.annotation()
+                .annotations(annotations);
+            
+            g.append("g")
+                .attr("class", "annotation-group")
+                .call(makeAnnotations);
+        }
+        
+        function renderBuildingTypeChart(container) {
+            const margin = {top: 40, right: 20, bottom: 60, left: 80};
+            const width = 800 - margin.left - margin.right;
+            const height = 400 - margin.bottom - margin.top;
+            
+            const svg = container.append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom);
+            
+            const g = svg.append("g")
+                .attr("transform", `translate(${margin.left},${margin.top})`);
+            
+            // Prepare data for stacked bar chart
+            const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN',
+                          'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+            const fullMonths = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE',
+                              'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'];
+            
+            const buildingTypes = ['Residential', 'Commercial', 'Industrial'];
+            
+            const chartData = months.map((month, i) => {
+                const monthData = { month };
+                buildingTypes.forEach(type => {
+                    monthData[type] = processedData.buildingTypeMonthly[type] ? 
+                        processedData.buildingTypeMonthly[type][fullMonths[i]].kwh : 0;
+                });
+                return monthData;
+            });
+            
+            // Stack data
+            const stack = d3.stack()
+                .keys(buildingTypes);
+            
+            const stackedData = stack(chartData);
+            
+            // Scales
+            const xScale = d3.scaleBand()
+                .domain(months)
+                .range([0, width])
+                .padding(0.1);
+            
+            const yScale = d3.scaleLinear()
+                .domain([0, d3.max(stackedData, d => d3.max(d, d => d[1]))])
+                .range([height, 0]);
+            
+            const colorScale = d3.scaleOrdinal()
+                .domain(buildingTypes)
+                .range(['#FF6B6B', '#4ECDC4', '#45B7D1']);
+            
+            // Create groups for each building type
+            const groups = g.selectAll(".building-group")
+                .data(stackedData)
+                .enter().append("g")
+                .attr("class", "building-group")
+                .style("fill", d => colorScale(d.key));
+            
+            // Create rectangles
+            groups.selectAll("rect")
+                .data(d => d)
+                .enter().append("rect")
+                .attr("x", d => xScale(d.data.month))
+                .attr("y", height)
+                .attr("height", 0)
+                .attr("width", xScale.bandwidth())
+                .on("mouseover", function(event, d) {
+                    const buildingType = d3.select(this.parentNode).datum().key;
+                    const value = d[1] - d[0];
+                    showTooltip(event, `${d.data.month}<br/>${buildingType}: ${value.toLocaleString()} KWH`);
+                })
+                .on("mouseout", hideTooltip)
+                .transition()
+                .duration(1000)
+                .delay((d, i) => i * 50)
+                .attr("y", d => yScale(d[1]))
+                .attr("height", d => yScale(d[0]) - yScale(d[1]));
+            
+            // Axes
+            g.append("g")
+                .attr("class", "axis")
+                .attr("transform", `translate(0,${height})`)
+                .call(d3.axisBottom(xScale));
+            
+            g.append("g")
+                .attr("class", "axis")
+                .call(d3.axisLeft(yScale).tickFormat(d3.format(".2s")));
+            
+            // Labels
+            g.append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 0 - margin.left)
+                .attr("x", 0 - (height / 2))
+                .attr("dy", "1em")
+                .style("text-anchor", "middle")
+                .style("font-size", "14px")
+                .style("font-weight", "bold")
+                .text("Electricity Consumption (KWH)");
+            
+            g.append("text")
+                .attr("transform", `translate(${width/2}, ${height + margin.bottom - 10})`)
+                .style("text-anchor", "middle")
+                .style("font-size", "14px")
+                .style("font-weight", "bold")
+                .text("Month");
+            
+            // Legend
+            const legend = g.append("g")
+                .attr("class", "legend")
+                .attr("transform", `translate(${width - 120}, 20)`);
+            
+            buildingTypes.forEach((type, i) => {
+                legend.append("rect")
+                    .attr("x", 0)
+                    .attr("y", i * 25)
+                    .attr("width", 15)
+                    .attr("height", 15)
+                    .style("fill", colorScale(type));
+                
+                legend.append("text")
+                    .attr("x", 20)
+                    .attr("y", i * 25 + 12)
+                    .text(type)
+                    .style("font-size", "12px");
+            });
+            
+            // Annotation
+            const annotations = [{
+                note: {
+                    label: "Commercial buildings show less seasonal variation than residential",
+                    title: "Building Pattern"
+                },
+                x: xScale("JUL"),
+                y: yScale(stackedData[1][6][1]) - 20,
+                dy: -40,
+                dx: -100
+            }];
+            
+            const makeAnnotations = d3.annotation()
+                .annotations(annotations);
+            
+            g.append("g")
+                .attr("class", "annotation-group")
+                .call(makeAnnotations);
+        }
+        
+        // Tooltip functions
+        function showTooltip(event, content) {
+            const tooltip = d3.select("#tooltip");
+            tooltip.html(content)
+                .style("left", (event.pageX + 10) + "px")
+                .style("top", (event.pageY - 10) + "px")
+                .style("opacity", 1);
+        }
+        
+        function hideTooltip() {
+            d3.select("#tooltip").style("opacity", 0);
+        }
+        
+        // Load and process data
+        d3.json("processed_energy_data.json").then(function(jsonData) {
+            processedData = jsonData;
+            showScene(0);
+        }).catch(function(error) {
+            console.error("Error loading data:", error);
+            // For development, create mock data
+            createMockData();
+            showScene(0);
+        });
+        
+        // Mock data for development
+        function createMockData() {
+            const months = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE',
+                          'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'];
+            
+            processedData = {
+                byBuildingType: {
+                    'Residential': { totalKwh: 15000000, totalTherms: 8000000, count: 1500 },
+                    'Commercial': { totalKwh: 25000000, totalTherms: 12000000, count: 800 },
+                    'Industrial': { totalKwh: 8000000, totalTherms: 4000000, count: 200 }
+                },
+                monthlyTotals: {},
+                buildingTypeMonthly: {
+                    'Residential': {},
+                    'Commercial': {},
+                    'Industrial': {}
+                }
+            };
+            
+            // Mock seasonal patterns
+            const seasonalMultipliers = {
+                kwh: [0.9, 0.85, 0.8, 0.75, 0.8, 1.2, 1.4, 1.3, 1.1, 0.9, 0.85, 0.9],
+                therms: [1.5, 1.4, 1.2, 0.8, 0.5, 0.3, 0.2, 0.2, 0.4, 0.8, 1.2, 1.4]
+            };
+            
+            months.forEach((month, i) => {
+                processedData.monthlyTotals[month] = {
+                    kwh: 4000000 * seasonalMultipliers.kwh[i],
+                    therms: 2000000 * seasonalMultipliers.therms[i]
+                };
+                
+                Object.keys(processedData.buildingTypeMonthly).forEach(buildingType => {
+                    const baseKwh = processedData.byBuildingType[buildingType].totalKwh / 12;
+                    const baseTherms = processedData.byBuildingType[buildingType].totalTherms / 12;
+                    
+                    processedData.buildingTypeMonthly[buildingType][month] = {
+                        kwh: baseKwh * seasonalMultipliers.kwh[i],
+                        therms: baseTherms * seasonalMultipliers.therms[i]
+                    };
+                });
+            });
+        }
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowLeft') {
+                previousScene();
+            } else if (event.key === 'ArrowRight') {
+                nextScene();
+            }
+        });
+    </script>
+</body>
+</html>

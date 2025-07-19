@@ -1,0 +1,276 @@
+{
+  "byBuildingType": {
+    "Residential": {
+      "totalKwh": 4164901482.0,
+      "totalTherms": 695032350.0,
+      "count": 49747
+    },
+    "Commercial": {
+      "totalKwh": 7212402675.0,
+      "totalTherms": 389086051.0,
+      "count": 17185
+    },
+    "Industrial": {
+      "totalKwh": 235111127.0,
+      "totalTherms": 1140856.0,
+      "count": 42
+    },
+    "0": {
+      "totalKwh": 4106576343.0,
+      "totalTherms": 230848192.0,
+      "count": 77
+    }
+  },
+  "monthlyTotals": {
+    "JANUARY": {
+      "kwh": 1163549480.0,
+      "therms": 255424284.0
+    },
+    "FEBRUARY": {
+      "kwh": 1149977686.0,
+      "therms": 216036290.0
+    },
+    "MARCH": {
+      "kwh": 1074903644.0,
+      "therms": 185460859.0
+    },
+    "APRIL": {
+      "kwh": 1056031864.0,
+      "therms": 0.0
+    },
+    "MAY": {
+      "kwh": 1261802956.0,
+      "therms": 63748827.0
+    },
+    "JUNE": {
+      "kwh": 1522461143.0,
+      "therms": 40648383.0
+    },
+    "JULY": {
+      "kwh": 1643177064.0,
+      "therms": 34964654.0
+    },
+    "AUGUST": {
+      "kwh": 1500648981.0,
+      "therms": 33667858.0
+    },
+    "SEPTEMBER": {
+      "kwh": 1228571950.0,
+      "therms": 33432668.0
+    },
+    "OCTOBER": {
+      "kwh": 1141026638.0,
+      "therms": 48198212.0
+    },
+    "NOVEMBER": {
+      "kwh": 1390969986.0,
+      "therms": 95899143.0
+    },
+    "DECEMBER": {
+      "kwh": 1585870235.0,
+      "therms": 210891397.0
+    }
+  },
+  "buildingTypeMonthly": {
+    "Residential": {
+      "JANUARY": {
+        "kwh": 248615173.0,
+        "therms": 143238776.0
+      },
+      "FEBRUARY": {
+        "kwh": 260259923.0,
+        "therms": 122245477.0
+      },
+      "MARCH": {
+        "kwh": 247652702.0,
+        "therms": 107468481.0
+      },
+      "APRIL": {
+        "kwh": 244131842.0,
+        "therms": 0.0
+      },
+      "MAY": {
+        "kwh": 311809490.0,
+        "therms": 33027685.0
+      },
+      "JUNE": {
+        "kwh": 448650681.0,
+        "therms": 18480020.0
+      },
+      "JULY": {
+        "kwh": 513256289.0,
+        "therms": 13863141.0
+      },
+      "AUGUST": {
+        "kwh": 433012731.0,
+        "therms": 12701928.0
+      },
+      "SEPTEMBER": {
+        "kwh": 305622687.0,
+        "therms": 12991303.0
+      },
+      "OCTOBER": {
+        "kwh": 290004672.0,
+        "therms": 19421373.0
+      },
+      "NOVEMBER": {
+        "kwh": 398601949.0,
+        "therms": 44576494.0
+      },
+      "DECEMBER": {
+        "kwh": 463283343.0,
+        "therms": 112250413.0
+      }
+    },
+    "Commercial": {
+      "JANUARY": {
+        "kwh": 576467874.0,
+        "therms": 70539866.0
+      },
+      "FEBRUARY": {
+        "kwh": 549801135.0,
+        "therms": 59066635.0
+      },
+      "MARCH": {
+        "kwh": 509558915.0,
+        "therms": 49963002.0
+      },
+      "APRIL": {
+        "kwh": 495740092.0,
+        "therms": 0.0
+      },
+      "MAY": {
+        "kwh": 587431528.0,
+        "therms": 19477485.0
+      },
+      "JUNE": {
+        "kwh": 668266878.0,
+        "therms": 13980670.0
+      },
+      "JULY": {
+        "kwh": 714410042.0,
+        "therms": 13369981.0
+      },
+      "AUGUST": {
+        "kwh": 670788546.0,
+        "therms": 13278176.0
+      },
+      "SEPTEMBER": {
+        "kwh": 573179912.0,
+        "therms": 12937861.0
+      },
+      "OCTOBER": {
+        "kwh": 524858243.0,
+        "therms": 17613464.0
+      },
+      "NOVEMBER": {
+        "kwh": 620307229.0,
+        "therms": 30590643.0
+      },
+      "DECEMBER": {
+        "kwh": 721592281.0,
+        "therms": 60648691.0
+      }
+    },
+    "Industrial": {
+      "JANUARY": {
+        "kwh": 21701789.0,
+        "therms": 236492.0
+      },
+      "FEBRUARY": {
+        "kwh": 21638635.0,
+        "therms": 208074.0
+      },
+      "MARCH": {
+        "kwh": 16637751.0,
+        "therms": 164289.0
+      },
+      "APRIL": {
+        "kwh": 17883190.0,
+        "therms": 0.0
+      },
+      "MAY": {
+        "kwh": 16453550.0,
+        "therms": 56648.0
+      },
+      "JUNE": {
+        "kwh": 20889779.0,
+        "therms": 32944.0
+      },
+      "JULY": {
+        "kwh": 18065104.0,
+        "therms": 27315.0
+      },
+      "AUGUST": {
+        "kwh": 19248927.0,
+        "therms": 26571.0
+      },
+      "SEPTEMBER": {
+        "kwh": 19869878.0,
+        "therms": 27738.0
+      },
+      "OCTOBER": {
+        "kwh": 17691640.0,
+        "therms": 41784.0
+      },
+      "NOVEMBER": {
+        "kwh": 19261143.0,
+        "therms": 79484.0
+      },
+      "DECEMBER": {
+        "kwh": 25769741.0,
+        "therms": 166234.0
+      }
+    },
+    "0": {
+      "JANUARY": {
+        "kwh": 316764644.0,
+        "therms": 41409150.0
+      },
+      "FEBRUARY": {
+        "kwh": 318277993.0,
+        "therms": 34516104.0
+      },
+      "MARCH": {
+        "kwh": 301054276.0,
+        "therms": 27865087.0
+      },
+      "APRIL": {
+        "kwh": 298276740.0,
+        "therms": 0.0
+      },
+      "MAY": {
+        "kwh": 346108388.0,
+        "therms": 11187009.0
+      },
+      "JUNE": {
+        "kwh": 384653805.0,
+        "therms": 8154749.0
+      },
+      "JULY": {
+        "kwh": 397445629.0,
+        "therms": 7704217.0
+      },
+      "AUGUST": {
+        "kwh": 377598777.0,
+        "therms": 7661183.0
+      },
+      "SEPTEMBER": {
+        "kwh": 329899473.0,
+        "therms": 7475766.0
+      },
+      "OCTOBER": {
+        "kwh": 308472083.0,
+        "therms": 11121591.0
+      },
+      "NOVEMBER": {
+        "kwh": 352799665.0,
+        "therms": 20652522.0
+      },
+      "DECEMBER": {
+        "kwh": 375224870.0,
+        "therms": 37826059.0
+      }
+    }
+  }
+}
